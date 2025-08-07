@@ -5,9 +5,9 @@
   
   **Your Self-Service Platform for Cloud-Native Services**
   
-  [![Backstage](https://img.shields.io/badge/Built%20with-Backstage-1db954?logo=spotify)](https://backstage.io)
+  [![Backstage](https://img.shields.io/badge/Built%20with-Backstage-9BF0E1?logo=backstage)](https://backstage.io)
   [![GitHub](https://img.shields.io/badge/Platform-GitHub-181717?logo=github)](https://github.com/open-service-portal)
-  [![Kubernetes](https://img.shields.io/badge/Runs%20on-Kubernetes-326ce5?logo=kubernetes)](https://kubernetes.io)
+  [![Kubernetes](https://img.shields.io/badge/Runs%20on-Kubernetes-326CE5?logo=kubernetes)](https://kubernetes.io)
 </div>
 
 ---
