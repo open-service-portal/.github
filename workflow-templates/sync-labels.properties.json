@@ -1,0 +1,14 @@
+{
+  "name": "Sync Organization Labels",
+  "description": "Synchronize issue labels from the organization's standard label definitions",
+  "iconName": "label-icon",
+  "categories": [
+    "Automation",
+    "utilities"
+  ],
+  "filePatterns": [
+    "package.json$",
+    "^Dockerfile",
+    ".*\\.md$"
+  ]
+}

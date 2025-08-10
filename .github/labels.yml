@@ -1,0 +1,53 @@
+# Organization-wide label definitions
+# These can be synced to repositories using GitHub Actions
+
+# Component Labels
+- name: "backstage"
+  color: "1f77b4"
+  description: "Related to Backstage platform"
+
+- name: "crossplane"
+  color: "ff7f0e"
+  description: "Related to Crossplane infrastructure"
+
+- name: "kubernetes"
+  color: "2ca02c"
+  description: "Kubernetes configuration and resources"
+
+- name: "templates"
+  color: "d62728"
+  description: "Service templates and scaffolding"
+
+- name: "gitops"
+  color: "9467bd"
+  description: "CI/CD and GitOps workflows"
+
+- name: "docs"
+  color: "8c564b"
+  description: "Documentation improvements"
+
+# Community Labels
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+
+- name: "good first issue"
+  color: "7057ff"
+  description: "Good for newcomers"
+
+# Special Labels
+- name: "security"
+  color: "ee0000"
+  description: "Security-related issue"
+
+- name: "performance"
+  color: "ff9800"
+  description: "Performance improvements"
+
+- name: "dependencies"
+  color: "0366d6"
+  description: "Pull requests that update a dependency file"
+
+- name: "tech-debt"
+  color: "fbca04"
+  description: "Technical debt and refactoring"
