@@ -1,53 +1,62 @@
 # Organization-wide label definitions
 # These can be synced to repositories using GitHub Actions
+# Using prefix system inspired by opencloud-eu
 
-# Component Labels
-- name: "backstage"
-  color: "1f77b4"
+# Component Labels (consistent light gray)
+- name: "component:backstage"
+  color: "DADADA"
   description: "Related to Backstage platform"
 
-- name: "crossplane"
-  color: "ff7f0e"
+- name: "component:crossplane"
+  color: "DADADA"
   description: "Related to Crossplane infrastructure"
 
-- name: "kubernetes"
-  color: "2ca02c"
+- name: "component:kubernetes"
+  color: "DADADA"
   description: "Kubernetes configuration and resources"
 
-- name: "templates"
-  color: "d62728"
+- name: "component:templates"
+  color: "DADADA"
   description: "Service templates and scaffolding"
 
-- name: "gitops"
-  color: "9467bd"
+- name: "component:gitops"
+  color: "DADADA"
   description: "CI/CD and GitOps workflows"
 
-- name: "docs"
-  color: "8c564b"
+- name: "component:docs"
+  color: "DADADA"
   description: "Documentation improvements"
 
-# Community Labels
+# Area Labels (consistent light purple)
+- name: "area:security"
+  color: "E2BAFF"
+  description: "Security-related issue"
+
+- name: "area:performance"
+  color: "E2BAFF"
+  description: "Performance improvements"
+
+- name: "area:dependencies"
+  color: "E2BAFF"
+  description: "Pull requests that update a dependency file"
+
+- name: "area:tech-debt"
+  color: "E2BAFF"
+  description: "Technical debt and refactoring"
+
+- name: "area:devops"
+  color: "E2BAFF"
+  description: "Build, deployment, infrastructure"
+
+- name: "area:testing"
+  color: "E2BAFF"
+  description: "Testing and test infrastructure"
+
+# Community Labels (consistent green)
 - name: "help wanted"
-  color: "008672"
+  color: "36B37E"
   description: "Extra attention is needed"
 
 - name: "good first issue"
-  color: "7057ff"
+  color: "36B37E"
   description: "Good for newcomers"
-
-# Special Labels
-- name: "security"
-  color: "ee0000"
-  description: "Security-related issue"
-
-- name: "performance"
-  color: "ff9800"
-  description: "Performance improvements"
-
-- name: "dependencies"
-  color: "0366d6"
-  description: "Pull requests that update a dependency file"
-
-- name: "tech-debt"
-  color: "fbca04"
-  description: "Technical debt and refactoring"
