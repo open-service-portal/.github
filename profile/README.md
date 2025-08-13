@@ -12,6 +12,32 @@
 
 ---
 
+<div align="center">
+
+<table>
+<tr>
+<td align="center" width="33%">
+<h3>🏠</h3>
+<b><a href="https://github.com/open-service-portal/app-portal">App Portal</a></b><br/>
+The Backstage application
+</td>
+<td align="center" width="33%">
+<h3>📚</h3>
+<b><a href="https://github.com/open-service-portal/portal-workspace">Workspace</a></b><br/>
+Docs & setup guides
+</td>
+<td align="center" width="33%">
+<h3>📋</h3>
+<b><a href="https://github.com/orgs/open-service-portal/projects/1">Roadmap</a></b><br/>
+Track our progress
+</td>
+</tr>
+</table>
+
+</div>
+
+---
+
 ## 🎯 Our Mission
 
 We're building an **open-source Internal Developer Platform** that empowers developers to provision and manage cloud-native services through a unified, self-service portal. No more tickets, no more waiting - just click and deploy!
@@ -27,6 +53,69 @@ Built on [Backstage](https://backstage.io), the open platform for building devel
 - **Self-Service Infrastructure** - Provision databases, message queues, and more with a click
 - **Developer Documentation** - Integrated TechDocs for all your services
 - **GitHub Integration** - Seamless authentication and repository management
+
+<!-- ROADMAP-START -->
+## 🗓️ Project Roadmap
+
+This roadmap is automatically generated from our GitHub Project and updated every Friday.
+
+```mermaid
+gantt
+    title Open Service Portal Roadmap
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    todayMarker stroke-width:5px,stroke:#0f0,opacity:0.75
+
+section Local Development
+Epic Local Development Environment :task4, 2025-08-11, 11d
+
+section Crossplane Foundation
+Epic Crossplane Foundation :task5, 2025-08-13, 9d
+
+section Template Discovery
+Epic Template Discovery & Generation :task6, 2025-08-25, 11d
+
+section Service Catalog
+Epic Service Catalog Implementation :task7, 2025-08-25, 11d
+
+section Production Deployment
+Epic Production Deployment :task8, 2025-09-08, 11d
+
+section GitOps CICD
+Epic GitOps & CI/CD :task9, 2025-09-08, 11d
+
+section Day-2 Operations
+Epic Day-2 Operations :task10, 2025-09-10, 9d
+
+section Milestones
+v0.1 - Local MVP :milestone, task_v0_1_local_mvp, 2025-08-22, 0d
+v0.2 - Service Catalog :milestone, task_v0_2_service_catalog, 2025-09-05, 0d
+v0.3 - Production :milestone, task_v0_3_production, 2025-09-19, 0d
+```
+
+
+## 📊 Project Statistics
+
+- **Total Epics:** 16
+- **Completed:** 0 (0%)  
+- **In Progress:** 0
+- **To Do:** 0
+- **Critical Priority:** 0
+- **High Priority:** 0
+
+### 🔗 Quick Links
+- [📋 Project Board](https://github.com/orgs/open-service-portal/projects/1)
+- [🗺️ Interactive Roadmap View](https://github.com/orgs/open-service-portal/projects/1/views/3)
+- [📊 Table View](https://github.com/orgs/open-service-portal/projects/1/views/1)
+- [🎯 Kanban Board](https://github.com/orgs/open-service-portal/projects/1/views/2)
+
+*Last updated: Aug 08, 2025 at 13:34 UTC*
+
+---
+*🤖 This roadmap is automatically generated from [GitHub Projects](https://github.com/orgs/open-service-portal/projects/1) every Friday at 16:00 UTC*  
+*View the [interactive roadmap](https://github.com/orgs/open-service-portal/projects/1/views/3) for real-time updates*  
+*Generated on: Friday, August 8, 2025*
+<!-- ROADMAP-END -->
 
 ## 🚀 Getting Started
 
