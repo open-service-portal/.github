@@ -1,0 +1,160 @@
+# Reusable workflow for building Crossplane Configuration packages
+# This workflow provides a standardized build process for all template repositories
+name: Build Crossplane Package
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        description: 'Name of the package (e.g., configuration-dns-record)'
+        required: true
+        type: string
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: true
+        type: string
+      registry:
+        description: 'Container registry URL (default: ghcr.io)'
+        required: false
+        type: string
+        default: 'ghcr.io'
+      organisation:
+        description: 'Organization or user owning the package'
+        required: true
+        type: string
+
+    outputs:
+      package-path:
+        description: 'Full package path in registry'
+        value: ${{ jobs.build.outputs.package-path }}
+
+jobs:
+  build:
+    name: Build and Push Package
+    runs-on: ubuntu-latest
+    
+    outputs:
+      package-path: ${{ inputs.registry }}/${{ inputs.organisation }}/${{ inputs.package-name }}
+
+    env:
+      VERSION: ${{ inputs.version }}
+      PKG_PATH: ${{ inputs.registry }}/${{ inputs.organisation }}/${{ inputs.package-name }}
+      PKG_FILE: ${{ inputs.package-name }}.xpkg
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Crossplane CLI
+        run: |
+          echo "📦 Installing Crossplane CLI..."
+          curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh
+          sudo mv crossplane /usr/local/bin/
+          
+          # Verify installation
+          crossplane version 2>/dev/null || echo "✅ Crossplane CLI installed (server not required)"
+
+      - name: Verify package structure
+        run: |
+          echo "📁 Verifying package structure..."
+          
+          # Package must be in configuration directory (convention)
+          if [ ! -f "configuration/crossplane.yaml" ]; then
+            echo "❌ ERROR: configuration/crossplane.yaml not found!"
+            echo "All packages must follow the standard structure:"
+            echo "  configuration/"
+            echo "  ├── crossplane.yaml"
+            echo "  ├── composition.yaml"
+            echo "  └── xrd.yaml"
+            exit 1
+          fi
+          
+          echo "✅ Found package in configuration/ directory"
+          echo "📁 Package contents:"
+          ls -la configuration/
+
+      - name: Add version label to XRD
+        run: |
+          echo "🏷️ Adding version label to XRD: ${VERSION}"
+          
+          # Add version to XRD
+          if [ -f "configuration/xrd.yaml" ]; then
+            yq -i '.metadata.labels."openportal.dev/version" = env(VERSION)' \
+              configuration/xrd.yaml
+            echo "✅ Updated configuration/xrd.yaml"
+          else
+            echo "⚠️ Warning: configuration/xrd.yaml not found - skipping version label"
+          fi
+
+      - name: Build Crossplane package
+        run: |
+          echo "🔨 Building Crossplane package..."
+          echo "  Package root: configuration/"
+          echo "  Output file: ${PKG_FILE}"
+          
+          crossplane xpkg build \
+            --package-root=configuration \
+            --package-file="${PKG_FILE}"
+          
+          # Verify package was created
+          if [ ! -f "${PKG_FILE}" ]; then
+            echo "❌ Package build failed - file not created"
+            exit 1
+          fi
+          
+          echo "✅ Package built successfully"
+          ls -lh "${PKG_FILE}"
+
+      - name: Push package to registry
+        run: |
+          echo "📤 Pushing package to registry..."
+          echo "  Registry: ${{ inputs.registry }}"
+          echo "  Package: ${PKG_PATH}:${VERSION}"
+          
+          # Push with version tag
+          crossplane xpkg push \
+            --package-files="${PKG_FILE}" \
+            "${PKG_PATH}:${VERSION}"
+          
+          echo "✅ Pushed ${PKG_PATH}:${VERSION}"
+          
+          # Push as 'latest' for stable releases (no pre-release suffix)
+          if [[ ! "${VERSION}" =~ - ]]; then
+            echo "📤 Additionally pushing as 'latest' tag..."
+            crossplane xpkg push \
+              --package-files="${PKG_FILE}" \
+              "${PKG_PATH}:latest"
+            echo "✅ Pushed ${PKG_PATH}:latest"
+          else
+            echo "ℹ️ Skipping 'latest' tag (pre-release version)"
+          fi
+
+      - name: Summary
+        run: |
+          echo "## 📦 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Package Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Name:** \`${{ inputs.package-name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** \`${{ inputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry:** \`${{ inputs.registry }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Organization:** \`${{ inputs.organisation }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Published Images" >> $GITHUB_STEP_SUMMARY
+          echo "- **Versioned:** \`${PKG_PATH}:${{ inputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          if [[ ! "${{ inputs.version }}" =~ - ]]; then
+            echo "- **Latest:** \`${PKG_PATH}:latest\`" >> $GITHUB_STEP_SUMMARY
+          fi

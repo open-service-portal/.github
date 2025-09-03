@@ -1,0 +1,17 @@
+{
+  "name": "Crossplane Package Release",
+  "description": "Automated workflow for building, publishing, and cataloging Crossplane packages",
+  "iconName": "kubernetes",
+  "categories": [
+    "Automation",
+    "Deployment",
+    "Infrastructure"
+  ],
+  "filePatterns": [
+    "xrd.yaml",
+    "crossplane.yaml",
+    "composition.yaml",
+    "^configuration/.*\\.yaml$",
+    "^template-.*"
+  ]
+}
