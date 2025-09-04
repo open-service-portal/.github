@@ -57,7 +57,7 @@ jobs:
   build:
     name: Build Package
     needs: vars
-    uses: open-service-portal/github-org-settings/.github/workflows/build-crossplane-package.yaml@main
+    uses: open-service-portal/.github/.github/workflows/build-crossplane-package.yaml@main
     with:
       package-name: ${{ needs.vars.outputs.name }}
       version: ${{ needs.vars.outputs.version }}
