@@ -1,0 +1,123 @@
+# Template workflow for releasing Crossplane packages
+# This workflow orchestrates build, catalog update, and release creation
+name: Release Crossplane Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Semantic version tags
+  
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to use (e.g., v1.0.0)'
+        required: true
+        default: 'v0.0.0-pre'
+
+jobs:
+  # Job 1: Gather environment information
+  vars:
+    name: Gather environment information
+    runs-on: ubuntu-latest
+    
+    outputs:
+      registry: ${{ steps.set-vars.outputs.registry }}
+      organisation: ${{ steps.set-vars.outputs.organisation }}
+      name: ${{ steps.set-vars.outputs.name }}
+      version: ${{ steps.set-vars.outputs.version }}
+    
+    steps:
+      - id: set-vars
+        run: |
+          # Registry is always ghcr.io for our organization
+          echo "registry=ghcr.io" >> $GITHUB_OUTPUT
+          
+          # Organization is the repository owner
+          echo "organisation=${{ github.repository_owner }}" >> $GITHUB_OUTPUT
+          
+          # Package name is the repository name
+          echo "name=${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
+          
+          # Version comes from tag or manual input
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${{ github.ref_name }}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          
+          # Log the values for debugging
+          echo "📋 Configuration:"
+          echo "  Registry: ghcr.io"
+          echo "  Organization: ${{ github.repository_owner }}"
+          echo "  Package: ${{ github.event.repository.name }}"
+          echo "  Version: ${VERSION}"
+
+  # Job 2: Build and push the Crossplane package
+  build:
+    name: Build Package
+    needs: vars
+    uses: open-service-portal/github-org-settings/.github/workflows/build-crossplane-package.yaml@main
+    with:
+      package-name: ${{ needs.vars.outputs.name }}
+      version: ${{ needs.vars.outputs.version }}
+      registry: ${{ needs.vars.outputs.registry }}
+      organisation: ${{ needs.vars.outputs.organisation }}
+    permissions:
+      contents: read
+      packages: write
+    secrets: inherit
+
+  # Job 3: Update catalog (only on tag push)
+  catalog:
+    name: Update Catalog
+    needs: [vars, build]
+    # Only run for tag pushes, not manual dispatch testing
+    if: github.event_name == 'push'
+    uses: open-service-portal/catalog/.github/workflows/update-catalog-entry.yaml@main
+    with:
+      package-name: ${{ needs.vars.outputs.name }}
+      version: ${{ needs.vars.outputs.version }}
+      registry: ${{ needs.vars.outputs.registry }}
+      organisation: ${{ needs.vars.outputs.organisation }}
+    secrets: inherit
+
+  # Job 4: Create a GitHub release (only on tag push)
+  release:
+    name: Create Release
+    needs: [vars, build, catalog]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    env:
+      VERSION: ${{ needs.vars.outputs.version }}
+      PKG_PATH: ${{ needs.vars.outputs.registry }}/${{ needs.vars.outputs.organisation }}/${{ needs.vars.outputs.name }}
+    
+    steps:
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ needs.vars.outputs.version }}
+          body: |
+            ## Package: ${{ needs.vars.outputs.name }} ${{ needs.vars.outputs.version }}
+            
+            ### Installation
+
+            ```bash
+            kubectl apply -f - <<EOF
+            apiVersion: pkg.crossplane.io/v1
+            kind: Configuration
+            metadata:
+              name: ${{ needs.vars.outputs.name }}
+              namespace: crossplane-system
+            spec:
+              package: ${{ needs.vars.outputs.registry }}/${{ needs.vars.outputs.organisation }}/${{ needs.vars.outputs.name }}:${{ needs.vars.outputs.version }}
+            EOF
+            ```
+            
+            ### Catalog Update
+            - PR: ${{ needs.catalog.outputs.pr-url || 'Pending' }}
+          prerelease: ${{ contains(needs.vars.outputs.version, '-') }}
